@@ -65,6 +65,10 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
+<<<<<<< HEAD:config/database.php
+=======
+            'url' => env('postgres://fbqbylffueudlh:f4ae6f8fa4f4295c74b3a93e7769fab78bdcef49ad58a5fd40d3425b19c022db@ec2-174-129-226-232.compute-1.amazonaws.com:5432/d5pnk6fa8s7tj8'),
+>>>>>>> 954f03bec74a9101d0536519cd1e1733ad806b2f:app/config/database.php
             'host' => env('DB_HOST', 'ec2-174-129-226-232.compute-1.amazonaws.com'),
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'd5pnk6fa8s7tj8'),
