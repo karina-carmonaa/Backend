@@ -7,25 +7,6 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -37,69 +18,56 @@ class ProductController extends Controller
     {
         // Create a new product
      $product = Product::create($request->all());
-
-     // Return a response with a product json
-     // representation and a 201 status code   
      return response()->json($product,201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param  \App\Product  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function showProduct(String $id)
     {
-        $producto = Product::findOrFail($id);
-        return $producto;
+        $producto = Product::find($id);
+        return response()->json($producto,200);
     }
 	
 		/**
      * Display all resources.
-     *
-     * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function showAll(Product $product)
+    public function showAll()
     {
-        return $product->all();
-    }
-	
-    /**
-     * Show the form for editing the specified resource
-     *
-     * @param  \App\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Product $product)
-    {
-        //
+        $product = Product::all();
+        return response()->json($product,200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request  $id
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function updateProduct(Request $request, String $id)
     {
-        $update = Product::findOrFail($id);
-        $update->name = $request->name;
-        $update->price = $request->price;
-        $update->save();
+        $product = Product::find($id);
+        $product->name = $request->name;
+        $product->price = $request->price;
+        $product->save();
+        return response()->json($product, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Product  $product
+     * @param  \App\Product  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroyProduct(String $id)
     {
         $delete = Product::destroy($id);
+        return response()->json(200);
     }
 }
