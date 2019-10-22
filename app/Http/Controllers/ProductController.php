@@ -1,14 +1,13 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource as ProductResource;
 
 class ProductController extends Controller
 {
-
     /**
      * Store a newly created resource in storage.
      *
@@ -17,13 +16,12 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
                 //CREATE-2
-            'name' => 'required',
+            'data.attributes.name' => 'required',
             //CREATE-3, CREATE-4, CREATE-5
-            'price' => 'required|numeric|min:1',
-        ]);
-
+            'data.attributes.price' => 'required|numeric|min:1', ]);
         if ($validator->fails()) {
             return response()->json([
                 'errors' => [
@@ -33,10 +31,12 @@ class ProductController extends Controller
         }
         // Create a new product
         //CREATE-1
-     $product = Product::create($request->all());
-     return response()->json($product,201);
+        $product = new Product();
+        $product->name = $request->data["attributes"]["name"];
+        $product->price = $request->data["attributes"]["price"];;
+        $product->save();
+        return response()->json(new ProductResource($product), 201);
     }
-
     /**
      * Display the specified resource.
      *
@@ -48,7 +48,7 @@ class ProductController extends Controller
         $producto = Product::find($id);
          if($producto){
             //SHOW-1
-            return response()->json($producto,200);
+             return response()->json(new ProductResource($producto), 200);
         }
         else {
             //SHOW-2
@@ -65,12 +65,11 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function showAll()
-    {
-        //LIST1, LIST-2
-        $product = Product::all();
-        return response()->json($product,200);
+    {  
+        $products = Product::all();
+        return response()->json([
+            'data' => ProductResource::collection($products)], 200);
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -82,9 +81,8 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // UPDATE-2, UPDATE-3
-            'price' => 'numeric|min:1',
-        ]);
-
+            'data.attributes.name' => 'required',
+            'data.attributes.price' => 'required|numeric|min:1', ]);
         if ($validator->fails()) {
             return response()->json([
                 'errors' => [
@@ -95,10 +93,10 @@ class ProductController extends Controller
         $product = Product::find($id);
         if($product){
             //UPDATE-1
-            $product->name = $request->name;
-            $product->price = $request->price;
+            $product->name =  $request->data["attributes"]["name"];
+            $product->price =  $request->data["attributes"]["price"];
             $product->save();
-            return response()->json($product, 200);
+            return response()->json(new ProductResource($product), 200);
         }
         else {
             //UPDATE-4
@@ -110,7 +108,6 @@ class ProductController extends Controller
         }
         
     }
-
     /**
      * Remove the specified resource from storage.
      *

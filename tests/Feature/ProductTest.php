@@ -16,8 +16,13 @@ class ProductTest extends TestCase
     {
         // Given
         $productData = [
-            'name' => 'Product',
-            'price' => '20.00'
+            'data' => [
+                'type' => "products",
+                'attributes' => [
+                    'name' => 'Product',
+                    'price' => '20.00'
+                ]
+            ]
         ];
         // When
         $response = $this->json('POST', '/api/products', $productData); 
@@ -26,9 +31,9 @@ class ProductTest extends TestCase
         $response->assertStatus(201);
         // Assert the response has the correct structure
         $response->assertJsonStructure([
-            'id',
-            'name',
-            'price'
+            'data' => [
+                '*' =>  array_keys((new Product())->toArray())
+            ]
         ]);
         // Assert the product was created
         // with the correct data
@@ -36,12 +41,12 @@ class ProductTest extends TestCase
             'name' => 'Product',
             'price' => '20.00'
         ]);
-        $body = $response->decodeResponseJson();
+        $id =  json_encode($response->baseResponse->original->id);
         // Assert product is on the database
         $this->assertDatabaseHas(
             'products',
             [
-                'id' => $body['id'],
+                'id' => $id,
                 'name' => 'Product',
                 'price' => '20.00'
             ]
@@ -52,7 +57,12 @@ class ProductTest extends TestCase
     {
         // Given
         $productData = [
-            'price' => '20.00'
+            'data' => [
+                'type' => "products",
+                'attributes' => [
+                    'price' => '20.00'
+                ]
+            ]
         ];
         // When
         $response = $this->json('POST', '/api/products', $productData); 
@@ -71,7 +81,12 @@ class ProductTest extends TestCase
     {
         // Given
         $productData = [
-            'name' => 'Producto'
+            'data' => [
+                'type' => "products",
+                'attributes' => [
+                    'name' => 'product'
+                ]
+            ]
         ];
         // When
         $response = $this->json('POST', '/api/products', $productData); 
@@ -91,8 +106,13 @@ class ProductTest extends TestCase
     {
         // Given
         $productData = [
-            'name' => 'Producto',
-            'price' => 'word'
+            'data' => [
+                'type' => "products",
+                'attributes' => [
+                    'name' => 'Product',
+                    'price' => 'word'
+                ]
+            ]
         ];
         // When
         $response = $this->json('POST', '/api/products', $productData); 
@@ -111,8 +131,13 @@ class ProductTest extends TestCase
     {
         // Given
         $productData = [
-            'name' => 'Producto',
-            'price' => '-20.00'
+             'data' => [
+                'type' => "products",
+                'attributes' => [
+                    'name' => 'product',
+                    'price' => '-20.00'
+                ]
+            ]
         ];
         // When
         $response = $this->json('POST', '/api/products', $productData); 
@@ -136,10 +161,9 @@ class ProductTest extends TestCase
         $id = $producto->id;
         $response = $this->json('GET', '/api/products/'. $id .'');
         $response->assertStatus(200);
-        $valor = $response->decodeResponseJson();
         $this->assertJsonStringEqualsJsonString(
             json_encode($producto),
-            json_encode($valor)
+            json_encode($response->baseResponse->original)
         );
     }
     // SHOW-2  
@@ -199,15 +223,20 @@ class ProductTest extends TestCase
         $precio = $producto->price;
         $id = $producto->id;
         $productData = [
-            'name' => 'Producto 2',
-            'price' => '20.00'
+            'data' => [
+                'type' => "products",
+                'attributes' => [
+                    'name' => 'producto 1',
+                    'price' => '20.00'
+                ]
+            ]
         ];
         $response = $this->json('PUT', '/api/products/'. $id .'', $productData);
         $this->assertEquals(200, $response->getStatusCode());
         $valor = $this->json('GET', '/api/products/'. $id .'');
         $this->assertJsonStringNotEqualsJsonString(
             json_encode($producto),
-            json_encode($valor)
+            json_encode($valor->baseResponse->original)
         );
         //print_r(json_encode($primerValor). ' =/= '. json_encode($segundoValor));
         $this->assertDatabaseHas(
@@ -228,8 +257,13 @@ class ProductTest extends TestCase
         $precio = $producto->price;
         $id = $producto->id;
         $productData = [
-            'name' => 'Producto 2',
-            'price' => 'word'
+            'data' => [
+                'type' => "products",
+                'attributes' => [
+                    'name' => 'Producto',
+                    'price' => 'word'
+                ]
+            ]
         ];
         $response = $this->json('PUT', '/api/products/'. $id .'', $productData);
         $this->assertEquals(422, $response->getStatusCode());
@@ -262,8 +296,13 @@ class ProductTest extends TestCase
         $precio = $producto->price;
         $id = $producto->id;
         $productData = [
-            'name' => 'Producto 2',
-            'price' => '-20.00'
+             'data' => [
+                'type' => "products",
+                'attributes' => [
+                    'name' => 'Producto 2',
+                    'price' => '-20.00'
+                ]
+            ]
         ];
         $response = $this->json('PUT', '/api/products/'. $id .'', $productData);
         $this->assertEquals(422, $response->getStatusCode());
@@ -275,7 +314,7 @@ class ProductTest extends TestCase
         $valor = $this->json('GET', '/api/products/'. $id .'');
         $this->assertJsonStringEqualsJsonString(
             json_encode($producto),
-            json_encode($valor->decodeResponseJson())
+            json_encode($valor->baseResponse->original)
         );
         $this->assertDatabaseHas(
             'products',
