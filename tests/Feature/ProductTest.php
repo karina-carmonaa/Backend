@@ -12,6 +12,7 @@ class ProductTest extends TestCase
 {
    use RefreshDatabase;
     // CREATE-1 
+   /** @test */
     public function test_client_can_create_a_product()
     {
         // Given
@@ -48,6 +49,7 @@ class ProductTest extends TestCase
         );
     }
     //CREATE-2 
+    /** @test */
     public function the_name_attribute_is_not_sent_in_the_request()
     {
         // Given
@@ -66,7 +68,8 @@ class ProductTest extends TestCase
                 "title"]
         ]);
     }
-    // CREATE-3    
+    // CREATE-3   
+    /** @test */
     public function the_price_attribute_is_not_sent_in_the_request()
     {
         // Given
@@ -107,12 +110,13 @@ class ProductTest extends TestCase
         ]);
     }
     // CREATE-5   
+    /** @test */
     public function the_price_attribute_is_less_than_or_equal_to_zero_create()
     {
         // Given
         $productData = [
             'name' => 'Producto',
-            'price' => '-20.00'
+            'price' => '00.00'
         ];
         // When
         $response = $this->json('POST', '/api/products', $productData); 
@@ -127,6 +131,7 @@ class ProductTest extends TestCase
         ]);
     }
     //SHOW-1  
+    /** @test */
     public function test_client_can_show_a_product()
     {
         //Given
@@ -143,6 +148,7 @@ class ProductTest extends TestCase
         );
     }
     // SHOW-2  
+    /** @test */
     public function the_ID_does_not_exist_show_a_product()
     {
         //Given
@@ -150,7 +156,7 @@ class ProductTest extends TestCase
         $nombre = $producto->name;
         $precio = $producto->price;
         $id = $producto->id;
-        $response = $this->json('GET', '/api/products/-20');
+        $response = $this->json('GET', '/api/products/5');
         $response->assertStatus(404);
         $response->assertJsonStructure([
             "errors" => [
@@ -158,7 +164,8 @@ class ProductTest extends TestCase
                 "title"]
         ]);
     }
-    //  DELETE-1    
+    //  DELETE-1  
+    /** @test */  
     public function test_client_can_delete_products()
     {
         //Given
@@ -174,7 +181,8 @@ class ProductTest extends TestCase
             'price' => $precio
         ]);
     }
-    // DELETE-2     
+    // DELETE-2    
+    /** @test */ 
     public function the_ID_does_not_exist_delete_products()
     {
         //Given
@@ -191,6 +199,7 @@ class ProductTest extends TestCase
         ]);
     }
     // UPDATE-1   
+    /** @test */
     public function test_client_can_update_a_product()
     {
         //Given
@@ -220,6 +229,7 @@ class ProductTest extends TestCase
         );
     }
     //UPDATE-2   
+    /** @test */
     public function the_price_attribute_is_not_a_number_update()
     {
         //Given
@@ -254,6 +264,7 @@ class ProductTest extends TestCase
         );
     }
     // UPDATE-3  
+    /** @test */
     public function the_price_attribute_is_less_than_or_equal_to_zero_update()
     {
         //Given
@@ -263,7 +274,7 @@ class ProductTest extends TestCase
         $id = $producto->id;
         $productData = [
             'name' => 'Producto 2',
-            'price' => '-20.00'
+            'price' => '-20'
         ];
         $response = $this->json('PUT', '/api/products/'. $id .'', $productData);
         $this->assertEquals(422, $response->getStatusCode());
@@ -287,6 +298,7 @@ class ProductTest extends TestCase
         );
     }
     // UPDATE-4  
+    /** @test */
     public function the_ID_does_not_exist_update()
     {
         //Given
@@ -303,10 +315,12 @@ class ProductTest extends TestCase
         $response->assertJsonStructure([
             "errors" => [
                 "code",
-                "title"]
+                "title"
+            ]
         ]);
     }
     // LIST-1   
+    /** @test */
     public function test_client_can_show_all_products()
     {
         //Given
@@ -324,6 +338,7 @@ class ProductTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
     // LIST-2    
+    /** @test */
     public function test_client_can_show_all_products_when_is_empty(){
         $productData = '{"baseResponse":{"headers":{},"original":[],"exception":null}}';
         $response = $this->json('GET', '/api/products/');
